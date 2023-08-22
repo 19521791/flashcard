@@ -1,0 +1,27 @@
+variables:
+  IMAGE_NAME: long1100/flashcard
+  IMAGE_TAG: v1.0.0
+
+stages:
+  - build
+
+.build:
+  stage: build
+  image: docker:20.10.16
+  services:
+    - name: docker:20.10.16-dind
+      alias: docker
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  
+build-dev:
+  extends: .build
+  only:
+    - main
+  script:
+    - source .env
+    - echo "$REGISTRY_USER" 
+    - echo "$REGISTRY_PASS"
+    - echo "$REGISTRY_PASS" | docker -H tcp://docker:2375 login --username "$REGISTRY_USER" --password-stdin
+    - docker -H tcp://docker:2375 build -t "$IMAGE_NAME:$IMAGE_TAG" .
+    - docker -H tcp://docker:2375 push "$IMAGE_NAME:$IMAGE_TAG"

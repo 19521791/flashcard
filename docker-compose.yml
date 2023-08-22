@@ -1,0 +1,42 @@
+version: "3.7"
+
+services:
+  # mongo:
+  #   image: mongo
+  #   volumes:
+  #     - .docker/data/db:/data/db
+  #   restart: always
+  #   networks:
+  #     - mynetwork
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: long
+
+  # mongo-express:
+  #   image: mongo-express
+  #   restart: always
+  #   ports:
+  #     - 8081:8081
+  #   networks:
+  #     - mynetwork
+  #   environment:
+  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
+  #     ME_CONFIG_MONGODB_ADMINPASSWORD: long
+  #     ME_CONFIG_MONGODB_URL: mongodb://root:long@mongo:27017/
+
+  app:
+    image: flashcard/node:v1
+    ports:
+      - "${PORT}:${PORT}"
+    restart: unless-stopped
+    volumes:
+      - /home/nguyenlong/flashcard:/usr/src/app
+    networks:
+      - mynetwork
+    environment:
+      - MONGODB_URI=mongodb://127.0.0.1:27017/my_db
+    # depends_on:
+    #   - db
+    #   - mongo-express
+networks:
+  mynetwork:
